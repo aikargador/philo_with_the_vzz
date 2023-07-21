@@ -1,0 +1,182 @@
+-----------------------------------<pthread_create()> -----------------------------------
+is a function in the POSIX threads (pthreads) library,
+which is used for creating a new thread. It takes four arguments:
+	A pointer to a pthread_t variable, which will be filled with a unique
+	identifier for the newly created thread.
+	A pointer to a pthread_attr_t structure, which specifies the attributes
+	for the new thread. If this argument is NULL, the default attributes will be used.
+	A pointer to a function that will be executed by the new thread. This function
+	must take a single void* argument and return a void* value.
+	An optional pointer to an argument that will be passed to the function
+	specified in the third argument.
+
+When pthread_create() is called, a new thread is created and begins executing the function
+specified in the third argument. The pthread_t variable pointed to by the first argument
+is filled with a unique identifier for the new thread, which can be used to refer to the
+thread in other pthreads functions.
+
+The pthread_attr_t structure pointed to by the second argument can be used to specify
+various attributes for the new thread, such as its scheduling policy, stack size,
+and detach state.
+
+Overall, pthread_create() is a powerful and flexible function that allows for the
+creation of new threads in a POSIX-compliant manner.
+
+-----------------------------------<pthread_join>-----------------------------------
+is a function in the POSIX threads (pthreads) library that is used
+to wait for a thread to terminate and retrieve its exit status.
+When a new thread is created using pthread_create, the calling thread can continue
+executing without waiting for the new thread to complete its work. However, in some
+cases, the calling thread may need to wait for the new thread to finish before it
+can continue. This is where pthread_join comes in.
+
+pthread_join allows a calling thread to wait for a specific thread to finish its
+execution. Once the target thread has terminated, pthread_join will return, and the
+calling thread can continue its execution. Additionally, pthread_join provides a
+mechanism for retrieving the exit status of the target thread, which can be used
+to determine if the thread completed successfully or if an error occurred.
+
+-----------------------------------<pthread_detach>-----------------------------------
+is a function in the POSIX threads (pthreads) library that allows a
+thread to be detached from the thread that created it. When a thread is detached,
+it can continue to run independently, and its resources can be automatically released
+when the thread terminates, without the need for another thread to call pthread_join
+to collect its exit status.
+
+To detach a thread, the pthread_detach function is called with the thread ID of the
+thread to be detached. Here is an example of how pthread_detach can be used:
+_____________________________________________________________________
+|	#include <pthread.h>											|
+|	#include <stdio.h>												|
+|																	|
+|	void *thread_func(void *arg) {									|
+|		printf("Hello from the new thread!\n");						|
+|		return NULL;												|
+|	}																|
+|																	|
+|	int main() {													|
+|		pthread_t thread;											|
+|		pthread_create(&thread, NULL, thread_func, NULL);			|
+|																	|
+|		printf("Hello from the main thread!\n");					|
+|																	|
+|		pthread_detach(thread);										|
+|		printf("New thread has been detached!\n");					|
+|																	|
+|		// Do other work...											|
+|																	|
+|		return 0;													|
+|	}																|
+---------------------------------------------------------------------
+
+In this example, the main thread creates a new thread using pthread_create and then
+continues its execution. The new thread prints a message to the console and then
+terminates. Instead of waiting for the new thread to finish using pthread_join,
+the main thread detaches the new thread using pthread_detach, allowing it to continue
+running independently. The main thread prints a message to the console indicating
+that the new thread has been detached, and then continues with its other work.
+
+It's worth noting that once a thread has been detached using pthread_detach, it
+cannot be re-attached, and its resources will be automatically released when the
+thread terminates, regardless of whether or not its exit status is collected using
+pthread_join. Therefore, it's important to ensure that a detached thread has finished
+executing before its resources are released to avoid memory leaks or other issues.
+
+-----------------------------------<pthread_mutex_init>-----------------------------------
+is a function in the POSIX threads (pthreads) library that is used to initialize a mutex,
+To use a mutex, it must first be initialized using pthread_mutex_init. The function takes
+two arguments: a pointer to a mutex object and a pointer to a mutex attribute object,
+which can be used to specify various attributes of the mutex, such as its type, scope,
+and protocol. If the second argument is NULL, default attributes are used.
+
+Here is an example of how pthread_mutex_init can be used:
+_________________________________________________________________________________________________________
+|	#include <pthread.h>																				|
+|	#include <stdio.h>																					|
+|																										|
+|	int shared_resource = 0;																			|
+|	pthread_mutex_t mutex;																				|
+|																										|
+|	void *thread_func(void *arg) {																		|
+|		pthread_mutex_lock(&mutex); // acquire the mutex												|
+|		shared_resource++;																				|
+|		printf("Thread %ld updated shared resource to %d\n", (long)pthread_self(), shared_resource);	|
+|		pthread_mutex_unlock(&mutex); // release the mutex												|
+|		return NULL;																					|
+|	}																									|
+|																										|
+|	int main() {																						|
+|		pthread_t thread1, thread2;																		|
+|		pthread_mutex_init(&mutex, NULL); // initialize the mutex										|
+|																										|
+|		pthread_create(&thread1, NULL, thread_func, NULL);												|
+|		pthread_create(&thread2, NULL, thread_func, NULL);												|
+|																										|
+|		pthread_join(thread1, NULL);																	|
+|		pthread_join(thread2, NULL);																	|
+|																										|
+|		pthread_mutex_destroy(&mutex); // destroy the mutex												|
+|		return 0;																						|
+|	}																									|
+|																										|
+---------------------------------------------------------------------------------------------------------
+
+In this example, the main thread initializes a mutex using pthread_mutex_init before creating
+two new threads using pthread_create. Each thread calls pthread_mutex_lock to acquire the
+mutex before updating a shared resource and printing a message to the console. Once the thread
+is done with the shared resource, it releases the mutex using pthread_mutex_unlock. The main
+thread waits for both threads to finish using pthread_join before destroying the mutex using
+pthread_mutex_destroy.
+
+Note that it is important to properly initialize and destroy a mutex to avoid memory leaks
+or other issues. Additionally, it is crucial to properly acquire and release the mutex using
+pthread_mutex_lock and pthread_mutex_unlock to ensure that shared resources are protected
+from concurrent access by multiple threads.
+
+--------------------------<pthread_mutex_unlock and pthread_mutex_lock>----------------------------
+which are two functions in the POSIX threads (pthreads) library used for thread
+synchronization in multi-threaded programming.
+
+pthread_mutex_lock:
+
+pthread_mutex_lock is used to acquire a mutual exclusion lock, also known as a mutex, which
+is used to synchronize access to shared resources or critical sections in a program. When a
+thread calls pthread_mutex_lock, it tries to acquire the mutex. If the mutex is currently
+locked by another thread, the calling thread will be blocked until the mutex becomes available.
+
+The prototype for pthread_mutex_lock is:
+%	int pthread_mutex_lock(pthread_mutex_t *mutex);
+
+Where mutex is a pointer to the mutex object that the thread wants to lock. If successful,
+the function returns zero. If an error occurs, a non-zero error code is returned.
+
+pthread_mutex_unlock:
+
+pthread_mutex_unlock is used to release a mutex that has been locked by a thread using
+pthread_mutex_lock. When a thread calls pthread_mutex_unlock, the mutex is released and
+becomes available to other threads that are waiting to acquire it.
+
+The prototype for pthread_mutex_unlock is:
+%	int pthread_mutex_unlock(pthread_mutex_t *mutex);
+
+Where mutex is a pointer to the mutex object that the thread wants to unlock. If successful,
+the function returns zero. If an error occurs, a non-zero error code is returned.
+
+It's important to note that in order to use pthread_mutex_lock and pthread_mutex_unlock
+correctly, the programmer must ensure that all threads that access shared resources or
+critical sections use the same mutex object. This ensures that only one thread at a time
+can access the shared resource, preventing race conditions and other synchronization problems.
+
+
+
+
+
+
+
+
+
+
+
+
+
+

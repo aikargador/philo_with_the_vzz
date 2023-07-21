@@ -1,0 +1,522 @@
+							<<<<Overview>>>>								
+Here are the things you need to know if you want to succeed this assignment:
+• One or more philosophers sit at a round table. There is a large bowl
+	of spaghetti in the middle of the table.
+• The philosophers alternatively eat, think, or sleep. While they are
+	eating, they are not thinking nor sleeping; while thinking, they are
+	not eating nor sleeping; and, of course, while sleeping, they are not
+	eating nor thinking.
+• There are also forks on the table. There are as many forks as philosophers.
+• Because serving and eating spaghetti with only one fork is very inconvenient, a
+	philosopher takes their right and their left forks to eat, one in each hand.
+• When a philosopher has finished eating, they put their forks back on the table and
+	start sleeping. Once awake, they start thinking again. The simulation stops when
+	a philosopher dies of starvation.
+• Every philosopher needs to eat and should never starve.
+• Philosophers don’t speak with each other.
+• Philosophers don’t know if another philosopher is about to die.
+• No need to say that philosophers should avoid dying!
+
+
+-> Global variables are forbidden, bruh!
+-> program should take the following arguments:
+	◦ number of philosophers
+	◦ time to die
+	◦ time to eat
+	◦ time to sleep
+	◦ [number of times each philosophers must eat] (optional arg!)
+
+[`](check_list)
+◦ number_of_philosophers: The number of philosophers and also the number of forks.
+◦ time_to_die (in milliseconds): If a philosopher didn’t start eating time_to_die 
+	milliseconds since the beginning of their last meal or the beginning of the simulation, they die.
+◦ time_to_eat (in milliseconds): The time it takes for a philosopher to eat.
+	During that time, they will need to hold two forks.
+◦ time_to_sleep (in milliseconds): The time a philosopher will spend sleeping.
+◦ number_of_times_each_philosopher_must_eat (optional argument): If all philosophers have
+	eaten at least number_of_times_each_philosopher_must_eat times, the simulation stops.
+	If not specified, the simulation stops when a philosopher dies.
+
+<Each philosopher has a number ranging from 1 to number_of_philosophers>
+<Philosopher number 1 sits next to philosopher number number_of_philosophers.
+Any other philosopher number N sits between philosopher number N - 1 and philosopher number N + 1.>
+
+About the logs of your program:
+• Any state change of a philosopher must be formatted as follows:
+	◦ timestamp_in_ms X has taken a fork
+	◦ timestamp_in_ms X is eating
+	◦ timestamp_in_ms X is sleeping
+	◦ timestamp_in_ms X is thinking
+	◦ timestamp_in_ms X died
+
+Replace timestamp_in_ms with the current timestamp in milliseconds and X with the philosopher number.
+• A displayed state message should not be mixed up with another message.
+• A message announcing a philosopher died should be displayed no more than 10 ms after the actual 
+	death of the philosopher.
+• Again, philosophers should avoid dying!
+
+Your program must not have any data races.
+
+*---------------------------------------------------------------------------------------------------*
+| Program name:		|	philo																		|
+|-------------------|-------------------------------------------------------------------------------|
+| Turn in files:	|	Makefile, *.h, *.c, in directory philo/										|
+|-------------------|-------------------------------------------------------------------------------|
+| Makefile:			|	NAME, all, clean, fclean, re												|
+|-------------------|-------------------------------------------------------------------------------|
+| Arguments:		|	number_of_philosophers time_to_die time_to_eat, time_to_sleep				|
+| 					|	[number_of_times_each_philosopher_must_eat]									|
+|-------------------|-------------------------------------------------------------------------------|
+| External functs:	|	memset, printf, malloc, free, write, usleep, gettimeofday, pthread_create,	|
+|					|	pthread_detach, pthread_join, pthread_mutex_init, pthread_mutex_destroy,	|
+|					|	pthread_mutex_lock, pthread_mutex_unlock									|
+|-------------------|-------------------------------------------------------------------------------|
+| Libft authorized:	|	No																			|
+|-------------------|-------------------------------------------------------------------------------|
+| Description:		|	Philosophers with threads and mutexes										|
+*---------------------------------------------------------------------------------------------------*
+
+The specific rules for the mandatory part are:
+	• Each philosopher should be a thread.
+	• There is one fork between each pair of philosophers. Therefore, if there are several philosophers,
+	each philosopher has a fork on their left side and a fork on their right side. If there is only one
+	philosopher, there should be only one fork on the table.
+	• To prevent philosophers from duplicating forks, you should protect the forks state with a mutex
+	for each of them.
+
+<--------------External functions------------->
+	->	memset						||
+	->	printf						|✔️|
+	->	malloc						|✔️|
+	->	free						|✔️|
+	->	write						|✔️|
+	->	usleep						||
+	->	gettimeofday				|✔️|
+	->	pthread_create				|✔️|
+	->	pthread_detach				|✔️|
+	->	pthread_join				|✔️|
+	->	pthread_mutex_init			|✔️|
+	->	pthread_mutex_destroy		|✔️|
+	->	pthread_mutex_lock			|✔️|
+	->	pthread_mutex_unlock		|✔️|
+<---------------------------------------------->
+chk check_list gpt for the explanations of each of the functions!,
+and even below!
+
+
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<important>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+when a philosopher has finished eating, they put their forks back on the table and
+start sleeping. Once awake, they start thinking again. The simulation stops when
+a philosopher dies of starvation.
+
+Because serving and eating spaghetti with only one fork is very inconvenient, a
+philosopher takes their right and their left forks to eat, one in each hand.
+
+Philosophers don’t speak with each other.
+Philosophers don’t know if another philosopher is about to die.
+
+philosophers	-> threads
+forks			-> mutexes
+the food		-> shared resource
+time to die		-> if not eaten within the allotted time, they die
+time to eat		-> the time it takes for a philo to eat
+time to slee	-> the time a philo spends sleeping
+
+opt[no. of tmes each philo must eat]	-> if all philo ate atlest the opt[] simulation stops, or it stops when a philo dies
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+michael blah blah the linux programming interface
+
+<advantages of threads:
+
+Sharing information between threads is easy and fast. It is just a matter of copying data into
+shared (global or heap) variables. However in order to avoid the problems that can occur when
+multiple threads try to update the same information, we must employ the synchronization techniques
+
+Thread creation is fastert than process creation typically, ten times faster or better. (On Linux
+threads are implemented using the clone() system call), Thread creation is faster because many of
+the attributes that must be duplicated in a child created by fork() are instead shared between threads.
+In particular, copy-on-write duplication of pages of memory is not required, nor is duplication of page
+tables.
+
+<Besides global memory, threads also share a number of other attributes (i.e., these attributes are 
+global to a process, rather than specific to a thread). These attributes include the following:
+
+process ID and parent process ID;
+process group ID and session ID;
+controlling terminal;
+process credentials (user and group IDs);
+open file descriptors;
+record locks created using fcnt();
+signal dispositions;
+file system-related information: unmask, current working directory, and root directory;
+interval timers(setitimer()) and POSIX timers(timer_create());
+System V semaphore undo (semadj) values;
+resource limits;
+CPU time consumed (as returned by times());
+resources consumed (as returned by getrusage()); and
+nice value (set by setpriority() and nice()).
+
+
+<Among the attributes that are distinct for each thread are the following:
+
+thread ID;
+signal mask;
+thread-specific data;
+alternate signal stack;
+the errno variable;
+floating-point environment
+realtime scheduling policy and priority;
+CPU affinity;
+capabilities;
+stack (local variables and function call linkage information).
+
+
+<Pthreads data types:
+
+the Pthreads API defines a number of data types, some of which are listed in the table
+given below:
+
+ ___________________________________________________________________
+| Data type				|	DESCRIPTION								|
+|___________________________________________________________________|
+| pthread_t				|	Thread identifier						|
+|___________________________________________________________________|
+| pthread_mutex_t		|	Mutex									|
+|___________________________________________________________________|
+| pthread_mutexattr_t	|	Mutex attributes object					|
+|___________________________________________________________________|
+| pthread_cond_t		|	Condition variable						|
+|___________________________________________________________________|
+| pthread_condattr_t	|	Condition variable attributes object	|
+|___________________________________________________________________|
+| pthread_key_t			|	Key for thread-specific data			|
+|___________________________________________________________________|
+| pthread_once_t		|	One-time initialization control context	|
+|___________________________________________________________________|
+| pthread_attr_t		|	Thread attributes object				|
+|___________________________________________________________________|
+
+
+SUSv3 doesn’t specify how these data types should be represented, and portable
+programs should treat them as opaque data. By this, we mean that a program
+should avoid any reliance on knowledge of the structure or contents of a variable of
+one of these types. In particular, we can’t compare variables of these types using
+the C == operator.
+
+<Thread and errno>
+In traditional UNIX API, errno is a global integer variable, However this doesn't suffice for
+threaded programs. If a thread made a function call that returned an error in a globa; errno
+variable, then this would confuse toher threads that might also be making funciton calls and
+checking errno. In other words race conditions would result. Therefore in threaded programs,
+each thread has its own errno value, On Linux, a thread-specific errno is achieved in a similar
+manner to most other UNIX implementaions; errno is defined as a macro that expands into a function
+call returning a modifiable lvalue that is disinct for each thread. In summary errno has been
+adapted for threads that leave error reporting unchanged!
+
+<Return value from Pthreads functions>
+The traditional method of returning status from system calls and some library func-
+tions is to return 0 on success and –1 on error, with errno being set to indicate the
+
+error. The functions in the Pthreads API do things differently. All Pthreads func-
+tions return 0 on success or a positive value on failure. The failure value is one of
+
+the same values that can be placed in errno by traditional UNIX system calls.
+Because each reference to errno in a threaded program carries the overhead of
+a function call
+
+<Compliling Pthreads programs>
+On Linux programs that use the Pthreads API must be compiled with the cc -pthread option.
+The effects of this option include the following:
+
+- The _REENTRANT preprocessor macro is defined. This causes the declarations of a few
+	reentrant functions to be exposed.
+- The program is linked with the libpthread library (the equivalent of –lpthread).
+
+<Thread Creation>
+When a program is started, the resulting process consists of a single thread, called the
+initial or main thread.
+
+The pthread_create() function creates a new thread!
+________________________________________________________________________________
+|																				|
+|	#include <pthread.h>														|
+|																				|
+|	int pthread_create(pthread_t *thread, const pthread_attr_t *attr,			|
+|						void *(*start)(void *), void *arg);						|
+|				Returns 0 on success, or a positive error number on error		|
+|_______________________________________________________________________________|
+
+<start arg> The new thread commences execution by calling the function identified by start wuth the
+arhument arg (i.e., start(arg)). the arg is of void type so it can point to any data type
+and if no argumetns are to be sent u can just send NULL instead and if multiple arguments
+are to be sent u can send a structure containing all the arguments.
+
+{chk page 622 for int casting for return type and caution is required in that case because
+it could have the same value of PTHREAD_CANCELED which will give a wrong meaning to the
+pthread_join call!}
+
+A portable application would need to ensure that normally
+terminating threads don’t return integer values that match PTHREAD_CANCELED on
+any of the implementations on which the application is to run.
+
+<thread arg> The thread argument points to a buffer of type pthread_t into which the unique
+identifier for this thread is copied before pthread_create() returns. This identifier
+can be used in later Pthreads calls to refer to the thread.
+
+<attr arg> The attr argument is a pointer to a pthread_attr_t object that specifies various
+attributes for the new thread. If attr is specified as NULL, then the thread is created with
+various default attributes
+
+[random_info] After a call to pthread_create(), a program has no guarantees about which thread
+will next be scheduled to use the CPU (on a multiprocessor system, both threads may simultaneously
+execute on different CPUs). Programs that implicitly rely on a particular order of scheduling are
+open to race conditions. If we need to enforce a particular order of execution, we must use a
+synchronization technique!
+
+
+<Caution!! the following functions are not allowed in the project!!> !-----------------------------{
+<Thread termination>
+The execution of a thread terminated in one of the following ways:
+◦ The thread’s start function performs a return specifying a return value for the thread.
+◦ The thread calls pthread_exit() (described below).
+◦ The thread is canceled using pthread_cancel().
+◦ Any of the threads calls exit(), or the main thread performs a return (in the main() function),
+	which causes all threads in the process to terminate immediately.
+
+The pthread_exit() function terminates the calling thread, and specifies a return
+value that can be obtained in another thread by calling pthread_join().
+_________________________________________________
+|												|
+|	#include <pthread.h>						|
+|												|
+|	void pthread_exit(void *retval);			|
+|_______________________________________________|
+
+Calling pthread_exit() is equivalent to performing a return in the thread’s start func-
+tion, with the difference that pthread_exit() can be called from any function that has
+been called by the thread’s start function.
+
+The retval argument specifies the return value for the thread. The value pointed
+to by retval should not be located on the thread’s stack, since the contents of that
+stack become undefined on thread termination. (For example, that region of the
+process’s virtual memory might be immediately reused by the stack for a new
+thread.) The same statement applies to the value given to a return statement in
+the thread’s start function.
+If the main thread calls pthread_exit() instead of calling exit() or performing a
+return, then the other threads continue to execute.
+
+<Thread IDs>
+Each thread within a process is uniquely identified by a thread ID. This ID is
+returned to the caller of pthread_create(), and a thread can obtain its own ID using
+pthread_self().
+_________________________________________________________________________________
+|																				|
+|	#include <pthread.h>														|
+|																				|
+|	pthread_t pthread_self(void);												|
+|									Returns the thread ID of the calling thread	|
+|_______________________________________________________________________________|
+
+Thread IDs are useful within applications for the following reasons:
+◦ Various Pthreads functions use thread IDs to identify the thread on which they are to act.
+◦ In some applications, it can be useful to tag dynamic data structures with the ID of a
+	particular thread. This can serve to identify the thread that created or “owns” a data
+	structure, or can be used by one thread to identify a specific thread that should
+	subsequently do something with that data structure.
+
+The pthread_equal() function allows us check whether two thread IDs are the same.
+_____________________________________________________________________________________
+|																					|
+|	#include <pthread.h>															|
+|																					|
+|	int pthread_equal(pthread_t t1, pthread_t t2);									|
+|						Returns nonzero value if t1 and t2 are equal, otherwise 0	|
+|___________________________________________________________________________________|
+
+For example, to check if the ID of the calling thread matches a thread ID saved in
+the variable tid, we could write the following:
+
+	if (pthread_equal(tid, pthread_self())
+		printf("tid matches self\n");
+
+The pthread_equal() funciton is needed because the pthread_t data type must be treared as
+opaque data type. On Linux, pthread_t happens to be defined as an unsigned long, but on other
+implementations, it could be a pointer or a structure.
+
+[random_info] SUSv3 doesn’t require pthread_t to be implemented as a scalar type; it could be a struc-
+ture. Therefore, we can’t portably use code such as the following to display a thread ID (though it 
+does work on many implementations, including Linux, and is sometimes useful for debugging purposes):
+
+	pthread_t thr;
+
+	printf("Thread ID = %ld\n", (long) thr);    /* WRONG! */
+
+[random_info] POSIX thread IDs are not the same as the thread IDs returned by the Linux-specific
+gettid() system call. POSIX thread IDs are assigned and maintained by the threading implementation.
+The thread ID returned by gettid() is a number (similar to a process ID) that is assigned by the
+kernel. Although each POSIX thread has a unique kernel thread ID in the Linux NPTL threading implemen-
+tation, an application generally doesn’t need to know about the kernel IDs (and won’t be portable
+if it depends on knowing them).
+
+}---------------------------------------------------------------------------------------------!
+
+<Joining with a Terminated Thread>
+The pthread_join() function waits for the thread identified by thread to terminate. (If that thread
+has already terminated, pthread_join() returns immediately). This operation is termed joining.
+_____________________________________________________________________________________
+|																					|
+|	#include <pthread.h>															|
+|																					|
+|	int pthread_join(pthread_t thread, void **retval);								|
+|						Returns 0 on success, or a positive error number on error	|
+|___________________________________________________________________________________|
+
+If retval is a non-NULL pointer, then it receives a copy of the terminated thread’s return value—that
+is, the value that was specified when the thread performed a return or called pthread_exit().
+	Calling pthread_join() for a thread ID that has been previously joined can lead
+to unpredictable behavior; for example, it might instead join with a thread created
+later that happened to reuse the same thread ID.
+	If a thread is not detached, then we must join with it using
+pthread_join(). If we fail to do this, then, when the thread terminates, it produces
+the thread equivalent of a zombie process. Aside from wasting system resources, if
+enough thread zombies accumulate, we won’t be able to create additional threads.
+
+The task that pthread_join() performs for threads is similar to that performed
+by waitpid() for processes. However, there are some notable differences:
+
+	◦ Threads are peers. Any thread in a process can use pthread_join() to join with
+any other thread in the process. For example, if thread A creates thread B,
+which creates thread C, then it is possible for thread A to join with thread C, or
+vice versa. This differs from the hierarchical relationship between processes.
+When a parent process creates a child using fork(), it is the only process that
+can wait() on that child. There is no such relationship between the thread that
+calls pthread_create() and the resulting new thread.
+
+	◦ There is no way of saying “join with any thread” (for processes, we can do this
+using the call waitpid(–1, &status, options)); nor is there a way to do a nonblocking
+join (analogous to the waitpid() WNOHANG flag). There are ways to achieve similar
+functionality using condition variables;
+
+[extra_info] The limitation that pthread_join() can join only with a specific thread ID is
+intentional. The idea is that a program should join only with the threads that it “knows”
+about. The problem with a “join with any thread” operation stems from the fact that there
+is no hierarchy of threads, so such an operation could indeed join with any thread,
+including one that was privately created by a library function. (The condition-variable
+technique that we show in Section 30.2.4 allows a thread to join only with any other
+thread that it knows about.) As a consequence, the library would no longer be able to
+join with that thread in order to obtain its status, and it would erroneously try to
+join with a thread ID that had already been joined. In other words, a “join with any
+thread” operation is incompatible with modular program design.
+
+The program in Listing 29-1 creates another thread and then joins with it.
+
+<Detaching a Thread>
+By default, a thread is joinable, meaning that when it terminates, another thread
+can obtain its return status using pthread_join(). Sometimes, we don’t care about
+the thread’s return status; we simply want the system to automatically clean up and
+remove the thread when it terminates. In this case, we can mark the thread as detached,
+by making a call to pthread_detach() specifying the thread’s identifier in thread.
+
+
+As an example of the use of pthread_detach(), a thread can detach itself using the fol-
+lowing call:
+_____________________________________________________________________________________
+|																					|
+|	#include <pthread.h>															|
+|																					|
+|	int pthread_detach(pthread_t thread);											|
+|						Returns 0 on success, or a positive error number on error	|
+|___________________________________________________________________________________|
+
+Once a thread has been detached, it is no longer possible to use pthread_join() to
+obtain its return status, and the thread can’t be made joinable again.
+	Detaching a thread doesn’t make it immune to a call to exit() in another thread
+or a return in the main thread. In such an event, all threads in the process are imme-
+diately terminated, regardless of whether they are joinable or detached. To put
+things another way, pthread_detach() simply controls what happens after a thread
+terminates, not how or when it terminates.
+
+<Threads Versus Processes>
+In this section, we briefly consider some of the factors that might influence our
+choice of whether to implement an application as a group of threads or as a group
+of processes. We begin by considering the advantages of a multithreaded approach:
+◦ Sharing data between threads is easy. By contrast, sharing data between processes
+requires more work (e.g., creating a shared memory segment or using a pipe).
+◦ Thread creation is faster than process creation; context-switch time may be
+lower for threads than for processes.
+Using threads can have some disadvantages compared to using processes:
+◦ When programming with threads, we need to ensure that the functions we call
+are thread-safe or are called in a thread-safe manner. (We describe the concept
+of thread safety in Section 31.1.) Multiprocess applications don’t need to be
+concerned with this.
+◦ A bug in one thread (e.g., modifying memory via an incorrect pointer) can dam-
+age all of the threads in the process, since they share the same address space and
+other attributes. By contrast, processes are more isolated from one another.
+◦ Each thread is competing for use of the finite virtual address space of the host
+process. In particular, each thread’s stack and thread-specific data (or thread-
+local storage) consumes a part of the process virtual address space, which is
+consequently unavailable for other threads. Although the available virtual
+address space is large (e.g., typically 3 GB on x86-32), this factor may be a sig-
+nificant limitation for processes employing large numbers of threads or
+threads that require large amounts of memory. By contrast, separate processes
+can each employ the full range of available virtual memory (subject to the limi-
+tations of RAM and swap space).
+
+The following are some other points that may influence our choice of threads
+versus processes:
+◦ Dealing with signals in a multithreaded application requires careful design. (As
+a general principle, it is usually desirable to avoid the use of signals in multi-
+threaded programs.) We say more about threads and signals in Section 33.2.
+◦ In a multithreaded application, all threads must be running the same program
+(although perhaps in different functions). In a multiprocess application, differ-
+ent processes can run different programs.
+◦ Aside from data, threads also share certain other information (e.g., file descrip-
+tors, signal dispositions, current working directory, and user and group IDs).
+This may be an advantage or a disadvantage, depending on the application.
+
+<Summary>
+In a multithreaded process, multiple threads are concurrently executing the same
+program. All of the threads share the same global and heap variables, but each
+thread has a private stack for local variables. The threads in a process also share a
+number of other attributes, including process ID, open file descriptors, signal dis-
+positions, current working directory, and resource limits.
+The key difference between threads and processes is the easier sharing of
+information that threads provide, and this is the main reason that some application
+designs map better onto a multithread design than onto a multiprocess design.
+Threads can also provide better performance for some operations (e.g., thread
+creation is faster than process creation), but this factor is usually secondary in influ-
+encing the choice of threads versus processes.
+Threads are created using pthread_create(). Each thread can then independently
+terminate using pthread_exit(). (If any thread calls exit(), then all threads immedi-
+ately terminate.) Unless a thread has been marked as detached (e.g., via a call to
+pthread_detach()), it must be joined by another thread using pthread_join(), which
+returns the termination status of the joined thread.
+
+<Thread synchronization>
+One of the principal advantages of threads is that they can share information via
+global variables. However, this easy sharing comes at a cost: we must take care that
+multiple threads do not attempt to modify the same variable at the same time, or
+that one thread doesn’t try to read the value of a variable while another thread is
+modifying it. The term critical section is used to refer to a section of code that
+accesses a shared resource and whose execution should be atomic; that is, its execu-
+tion should not be interrupted by another thread that simultaneously accesses the
+same shared resource.
+
+Listing 30-1: Incorrectly incrementing a global variable from two threads
